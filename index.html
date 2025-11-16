@@ -10,8 +10,17 @@
     </head>
     <body>
         <div id="app">
-            <h1 class="text-3xl font-bold">Hello, Yo!</h1>
-            <p class="font-normal">Lorem ipsum dolor sit amet.</p>
+            <div class="absolute top-6 right-6">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input id="toggleDarkMode" type="checkbox" value="" class="sr-only peer" />
+                    <div class="relative w-9 h-5 bg-slate-200 dark:bg-indigo-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-soft dark:peer-focus:ring-brand-soft rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-buffer after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand focus:outline-hidden outline-none"></div>
+                    <span class="select-none ms-3 text-sm font-medium text-heading">Dark mode</span>
+                </label>
+            </div>
+            <h1 class="logo">[ HANGMAN GAME ]</h1>
+            <div id="game" class="mt-10 flex flex-col items-center">
+                <button id="startGame" class="button-primary" type="button">Start game</button>
+            </div>
         </div>
         <script type="module" src="./src/js/main.js"></script>
     </body>
