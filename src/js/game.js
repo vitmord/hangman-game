@@ -3,6 +3,7 @@ import { WORDS, KEYBOARD_LETTERS } from './consts'
 const gameElement = document.getElementById('game')
 const logoElement = document.querySelector('.logo')
 let triesLeft
+let winCount
 
 const createPlaceholders = () => {
     const word = sessionStorage.getItem('word')
@@ -50,19 +51,48 @@ const checkLetter = (letter) => {
 
         const hangmanImg = document.getElementById('hangman-img')
         hangmanImg.src = `images/hg-${10 - triesLeft}.png`
+
+        if (triesLeft === 0) stopGame('lose')
     } else {
         const wordArray = Array.from(word)
 
         wordArray.forEach((currentLetter, index) => {
             if (currentLetter === inputLetter) {
                 document.getElementById(`letter_${index}`).textContent = inputLetter
+                winCount++
+
+                if (winCount === word.length) stopGame('win')
             }
         })
     }
 }
 
+const stopGame = (status) => {
+    document.getElementById('placehlolder').remove()
+    document.getElementById('tries').remove()
+    document.getElementById('keyboard').remove()
+    document.getElementById('quit').remove()
+
+    const word = sessionStorage.getItem('word')
+
+    if (status === 'win') {
+        document.getElementById('hangman-img').src = 'images/hg-win.png'
+        document.getElementById('game').innerHTML += '<h2 class="result-header win">You won!</h2>'
+    } else if (status === 'lose') {
+        document.getElementById('game').innerHTML += '<h2 class="result-header lose">You lose :(</h2>'
+    } else if (status === 'quit') {
+        document.getElementById('hangman-img').remove()
+        logoElement.classList.remove('logo-sm')
+    }
+
+    document.getElementById('game').innerHTML += `<p>The word was: <span class="result-word">${word}</span></p><button id="play-again" class="button-primary px-5 py-2 mt-5">Play again</button>`
+
+    document.getElementById('play-again').onclick = startGame
+}
+
 export const startGame = () => {
     triesLeft = 10
+    winCount = 0
 
     logoElement.classList.add('logo-sm')
     const randomIndex = Math.floor(Math.random() * WORDS.length)
@@ -75,13 +105,18 @@ export const startGame = () => {
         if (e.target.classList.contains('key')) {
             const key = e.target
             key.disabled = true
-            console.log(wordToGuess, checkLetter(key.id))
+            checkLetter(key.id)
         }
     })
     gameElement.append(keyboardElement)
     const hangmanImg = createHangmamImg()
     gameElement.prepend(hangmanImg)
 
-    console.log(wordToGuess)
-    console.log(KEYBOARD_LETTERS)
+    gameElement.insertAdjacentHTML('beforeend', '<button id="quit" class="button-secondary px-2 py-1 mt-4" type="button">Quit</button>')
+
+    document.getElementById('quit').onclick = () => {
+        if (window.confirm('Are you sure you want to quit and lose progress?')) {
+            stopGame('quit')
+        }
+    }
 }
