@@ -2,6 +2,7 @@ import { WORDS, KEYBOARD_LETTERS } from './consts'
 
 const gameElement = document.getElementById('game')
 const logoElement = document.querySelector('.logo')
+let triesLeft
 
 const createPlaceholders = () => {
     const word = sessionStorage.getItem('word')
@@ -21,7 +22,7 @@ const createKeyboard = () => {
         key.setAttribute('type', 'button')
         key.classList.add('key')
         key.classList.add('button-primary')
-        key.id = `key_${letter}`
+        key.id = letter
         key.textContent = letter
         keyboard.append(key)
     })
@@ -39,10 +40,33 @@ const createHangmamImg = () => {
     return img
 }
 
+const checkLetter = (letter) => {
+    const word = sessionStorage.getItem('word')
+    const inputLetter = letter.toLowerCase()
+    if (!word.includes(inputLetter)) {
+        const triesCounter = document.getElementById('tries-left')
+        triesLeft--
+        triesCounter.textContent = triesLeft
+
+        const hangmanImg = document.getElementById('hangman-img')
+        hangmanImg.src = `images/hg-${10 - triesLeft}.png`
+    } else {
+        const wordArray = Array.from(word)
+
+        wordArray.forEach((currentLetter, index) => {
+            if (currentLetter === inputLetter) {
+                document.getElementById(`letter_${index}`).textContent = inputLetter
+            }
+        })
+    }
+}
+
 export const startGame = () => {
+    triesLeft = 10
+
     logoElement.classList.add('logo-sm')
     const randomIndex = Math.floor(Math.random() * WORDS.length)
-    const wordToGuess = WORDS[randomIndex]
+    const wordToGuess = WORDS[randomIndex].toLowerCase()
     sessionStorage.setItem('word', wordToGuess)
     gameElement.innerHTML = createPlaceholders()
     gameElement.innerHTML += `<p id="tries" class="mt-2">TRIES LEFT: <span id="tries-left" class="font-medium text-red-600">10</span></p>`
@@ -50,7 +74,8 @@ export const startGame = () => {
     keyboardElement.addEventListener('click', (e) => {
         if (e.target.classList.contains('key')) {
             const key = e.target
-            console.log(key.textContent)
+            key.disabled = true
+            console.log(wordToGuess, checkLetter(key.id))
         }
     })
     gameElement.append(keyboardElement)
